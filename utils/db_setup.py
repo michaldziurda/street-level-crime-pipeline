@@ -4,7 +4,6 @@ from pathlib import Path
 import yaml
 import sys
 
-sys.path.insert(1, str(Path(__file__).parent.parent.parent))
 from utils.config import Config
 
 def setup_database(config_path:str):

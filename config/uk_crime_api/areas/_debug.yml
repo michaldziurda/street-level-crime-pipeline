@@ -1,0 +1,9 @@
+area_name: "debug"
+coordinates:
+    # List of vertices in [longitude, latitude] (x, y) order for EPSG:4326
+    - [-0.51, 51.29]
+    - [-0.51, 51.37]
+    - [-0.34, 51.37]  
+    - [-0.34, 51.29] 
+    # Optionally, repeat the first point to close the loop explicitly:
+    # - [-0.51, 51.29]

@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: pipeline_user
-      POSTGRES_PASSWORD: strongpassword123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: pipeline_db
       LANG: en_US.UTF-8
       LC_ALL: en_US.UTF-8

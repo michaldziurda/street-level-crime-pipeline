@@ -4,7 +4,6 @@ import os
 import json
 import pandas as pd
 
-sys.path.insert(1, str(Path(__file__).parent.parent.parent))
 from utils.config import Config
 
 
@@ -48,7 +47,7 @@ def preprocess_json_data(input_data_dir: str, save_data_dir: str):
     df_clean['category'].unique()
         
     # save
-    df.to_parquet(os.path.join(save_data_dir, f""))
+    df_clean.to_parquet(os.path.join(save_data_dir, f"df.parquet"))
 
 
 if __name__ == '__main__':

@@ -10,7 +10,6 @@ import json
 import os
 import itertools
 
-sys.path.insert(1, str(Path(__file__).parent.parent.parent))
 from utils.config import Config
 from utils.split_poly import split_polygon_into_n
 
@@ -25,7 +24,7 @@ class UKCrimeAPICall:
                 #print(r.status_code)
             
             except requests.RequestException as e:
-                print('asdasdasdasd')
+                print(e)
                 time.sleep(self.config.wait_on_error)
                 continue
         
@@ -72,7 +71,7 @@ class UKCrimeAPICall:
             area_config = Config(area_config_file)
             area_name = area_config.area_name
             area_coordinates = area_config.coordinates
-            gdf = split_polygon_into_n(Polygon(area_coordinates), 25)
+            gdf = split_polygon_into_n(Polygon(area_coordinates), self.config.initial_poly_split)
             process_polys = deque(list(gdf['geometry']))
 
             print(area_config_file, month)
@@ -102,7 +101,7 @@ class UKCrimeAPICall:
 
                     if key == 200:
                         # Handle data here
-                        with open(rf"{Path(self.config.output_dir_raw)}\out_{area_name}_{data['date']}_{data['poly'].replace(':', '_')}.json", 'w', encoding='utf-8') as f:
+                        with open(Path(rf"{self.config.output_dir_raw}/out_{area_name}_{data['date']}_{data['poly'].replace(':', '_')}.json"), 'w', encoding='utf-8') as f:
                             print(f"Fetched responses: {len(values)}")
                             json.dump(values, f, indent=2)
 
@@ -110,6 +109,9 @@ class UKCrimeAPICall:
 
 
 if __name__ == "__main__":
-    api = UKCrimeAPICall(Path("config/uk_crime_api/config_api_call.yml"))
+    api = UKCrimeAPICall(Path(
+        #"config/uk_crime_api/config_api_call.yml"
+        "config/uk_crime_api/_config_debug.yml"
+        ))
     api.run()
 
