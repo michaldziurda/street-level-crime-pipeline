@@ -15,7 +15,10 @@ from utils.split_poly import split_polygon_into_n
 
 class UKCrimeAPICall:
     def __init__(self, config_path):
-        self.config = Config(config_path)
+        if isinstance(config_path, Config):
+            self.config = config_path
+        else:
+            self.config = Config(config_path)
 
     def post_request(self, session, data):
         for attempt in range(self.config.max_retries):

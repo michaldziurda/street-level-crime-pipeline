@@ -1,16 +1,9 @@
 import psycopg2
-from psycopg2.extras import execute_values
-from pathlib import Path
-import yaml
-import sys
+import os
+from dotenv import load_dotenv
 
-from utils.config import Config
-
-def setup_database(config_path:str):
-    # Load config (using your Config class)
-    config = Config(config_path)
-    
-    conn = psycopg2.connect(**config.database)
+def setup_database(conn):
+    print("DB setup...")
     cur = conn.cursor()
     
     # Create schema
@@ -19,24 +12,39 @@ def setup_database(config_path:str):
     # Create tables
     cur.execute("""
         CREATE TABLE IF NOT EXISTS db.crime_data (
-            id SERIAL PRIMARY KEY,
-            cell_id INTEGER,
-            polygon_geojson JSONB,
-            api_response JSONB,
-            fetched_at TIMESTAMP DEFAULT NOW(),
-            request_metadata JSONB
-        );
-    """)
-    
-    # Add indexes
-    #cur.execute("CREATE INDEX IF NOT EXISTS idx_cell_id ON db.crime_data (cell_id);")
-    #cur.execute("CREATE INDEX IF NOT EXISTS idx_api_response_gin ON db.crime_data USING GIN (api_response);")
-    
+                pk                          SERIAL PRIMARY KEY,
+                id                          INTEGER,
+                persistent_id               TEXT UNIQUE,
+                month                       TEXT,
+                category                    TEXT,
+                location_type               TEXT,
+                location_subtype            TEXT,
+                latitude                    NUMERIC(9,6),
+                longitude                   NUMERIC(9,6),
+                street_id                   INTEGER,
+                street_name                 TEXT,
+                context                     TEXT,
+                outcome_status_category     TEXT,
+                outcome_status_date         TEXT,
+                loaded_at                   TIMESTAMP DEFAULT NOW()
+                );
+            """)
+
     conn.commit()
     print("Schema and tables created successfully.")
     
     cur.close()
-    conn.close()
 
 if __name__ == "__main__":
-    pass
+    load_dotenv()
+    conn = psycopg2.connect(
+        dbname = os.getenv("POSTGRES_DB"),
+        user = os.getenv("POSTGRES_USER"),
+        password = os.getenv("POSTGRES_PASSWORD"),
+        host = os.getenv("POSTGRES_HOST"),
+        port = os.getenv("POSTGRES_PORT"))
+    
+    
+    setup_database(conn)
+    conn.close()
+

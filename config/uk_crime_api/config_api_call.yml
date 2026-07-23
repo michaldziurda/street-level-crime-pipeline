@@ -2,15 +2,17 @@
 api_url: "https://data.police.uk/api/crimes-street/all-crime"
 months: 
   - "2026-01"
-  - "2026-02"
-  - "2026-03"
-  - "2026-04"
-  - "2026-05"
+  #- "2026-02"
+  #- "2026-03"
+  #- "2026-04"
+  #- "2026-05"
 
 areas:
+  #- "config/uk_crime_api/areas/_debug.yml"
   - "config/uk_crime_api/areas/london.yml"
+  
 
-initial_poly_split: 1
+initial_poly_split: 10
 
 # Rate limiting and retries
 max_retries: 5
