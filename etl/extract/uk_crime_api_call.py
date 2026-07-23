@@ -8,6 +8,7 @@ from shapely import Polygon
 from collections import deque
 import json
 import os
+import itertools
 
 sys.path.insert(1, str(Path(__file__).parent.parent.parent))
 from utils.config import Config
@@ -18,13 +19,14 @@ class UKCrimeAPICall:
         self.config = Config(config_path)
 
     def post_request(self, session, data):
-        for attempt in range(1, self.config.max_retries):
+        for attempt in range(self.config.max_retries):
             try:
                 r = session.post(self.config.api_url, data=data, timeout=self.config.timeout)
+                #print(r.status_code)
             
             except requests.RequestException as e:
                 print('asdasdasdasd')
-                time.sleep(self.config.timeout)
+                time.sleep(self.config.wait_on_error)
                 continue
         
             if r.status_code == 503:
@@ -33,11 +35,12 @@ class UKCrimeAPICall:
             
             if r.status_code == 200:
                 # OK 
+                time.sleep(self.config.wait_on_success)
                 return {200: r.json()}
             
             if 500 <= r.status_code < 600:
                 # transient server error: retry with backoff
-                time.sleep(self.config.timeout)
+                time.sleep(self.config.wait_on_error)
                 continue
             
             if r.status_code == 429:
@@ -63,45 +66,50 @@ class UKCrimeAPICall:
     def run(self):
         session = requests.Session()
         self.res = {}
-        
-        # initial area of interes splitting
-        initial_poly = self.config.area_of_interest.coordinates
-        gdf = split_polygon_into_n(Polygon(initial_poly), 25)
-        process_polys = deque(list(gdf['geometry']))
 
-        while process_polys:
-            current_poly = process_polys.popleft()
-            #poly_str = ":".join([f"{round(x[1], 3)},{round(x[0],3)}" for x in current_poly.exterior.coords])
-            #full_api_url = f"{self.config.api_url}?date={self.config.month}&poly={poly_str}"
-            
-            data = {
-                "poly": ":".join([f"{round(x[1], 3)},{round(x[0],3)}" for x in current_poly.exterior.coords]),
-                "date": self.config.month
-                }
+        # Iterate over product of selected areas and months (defined in main api config) 
+        for area_config_file, month in itertools.product(self.config.areas, self.config.months): 
+            area_config = Config(area_config_file)
+            area_name = area_config.area_name
+            area_coordinates = area_config.coordinates
+            gdf = split_polygon_into_n(Polygon(area_coordinates), 25)
+            process_polys = deque(list(gdf['geometry']))
 
-            
-            out_dict = self.post_request(session, data)
-            #out_dict = {}
+            print(area_config_file, month)
 
-            if not out_dict:
-                continue
-            
-            for key, values in out_dict.items():
-                if key == 503:
-                    print("Polygon split needed")
-                    gdf_small = split_polygon_into_n(current_poly, 4)
-                    process_polys.extend(list(gdf_small['geometry']))
+            while process_polys:
+                current_poly = process_polys.popleft()
+                #poly_str = ":".join([f"{round(x[1], 3)},{round(x[0],3)}" for x in current_poly.exterior.coords])
+                #full_api_url = f"{self.config.api_url}?date={self.config.month}&poly={poly_str}"
+                
+                data = {
+                    "poly": ":".join([f"{round(x[1], 3)},{round(x[0],3)}" for x in current_poly.exterior.coords]),
+                    "date": month
+                    }
 
-                if key == 200:
-                    # Handle data here
-                    with open(rf"data\raw\uk_crime_api_call2\out_{data['date']}_{data['poly'].replace(":", "_")}.json", "w", encoding="utf-8") as f:
-                        print(f"Fetched responses: {len(values)}")
-                        json.dump(values, f, indent=2)
+                print(f"Requesting data for: {data}")
+                out_dict = self.post_request(session, data)
+                #out_dict = {}
 
-            print(f"Polygons left: {len(process_polys)}")
+                if not out_dict:
+                    continue
+                
+                for key, values in out_dict.items():
+                    if key == 503:
+                        print("Polygon split needed")
+                        gdf_small = split_polygon_into_n(current_poly, 4)
+                        process_polys.extend(list(gdf_small['geometry']))
+
+                    if key == 200:
+                        # Handle data here
+                        with open(rf"{Path(self.config.output_dir_raw)}\out_{area_name}_{data['date']}_{data['poly'].replace(':', '_')}.json", 'w', encoding='utf-8') as f:
+                            print(f"Fetched responses: {len(values)}")
+                            json.dump(values, f, indent=2)
+
+                print(f"Polygons left: {len(process_polys)}")
 
 
 if __name__ == "__main__":
-    api = UKCrimeAPICall(Path("config/config_api_call.yml"))
+    api = UKCrimeAPICall(Path("config/uk_crime_api/config_api_call.yml"))
     api.run()
 

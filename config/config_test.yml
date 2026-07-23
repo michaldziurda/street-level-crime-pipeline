@@ -29,9 +29,9 @@ output_dir_raw: "data/raw/uk_crime_api_calls"
 output_dir_processed: "data/processed/uk_crime_processed"
 
 # Database
-dbname: 
-user: os.getenv("DB_USER"),
-password: os.getenv("DB_PASSWORD"),
-host: os.getenv("DB_HOST"),
-port: os.getenv("DB_PORT")
+#dbname: 
+#user: os.getenv("DB_USER"),
+#password: os.getenv("DB_PASSWORD"),
+#host: os.getenv("DB_HOST"),
+#port: os.getenv("DB_PORT")
 

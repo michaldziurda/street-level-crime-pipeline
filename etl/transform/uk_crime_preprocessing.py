@@ -23,7 +23,7 @@ def preprocess_json_data(input_data_dir: str, save_data_dir: str):
         # standarize
         for entry in raw_data:
             std_data = {
-            'id': entry['id'] if entry['id'] else None,
+            'ID': entry.get('id'),
             'month': entry['month'] or None,
             'category': entry['category'] or None,
             'location_type': entry['location_type'] or None,
@@ -33,8 +33,8 @@ def preprocess_json_data(input_data_dir: str, save_data_dir: str):
             'street_id': entry['location']['street']['id'] or None,
             'street_name': entry['location']['street']['name'] or None,
             'context': entry['context'] or None,
-            'outcome_status_category': entry['outcome_status']['category'] or None if entry['outcome_status'] else None,
-            'outcome_status_date': entry['outcome_status']['date'] or None if entry['outcome_status'] else None,
+            'outcome_status_category': entry.get('outcome_status', {}).get('category'),
+            'outcome_status_date': entry.get('outcome_status', {}).get('date'),
             'persistent_id': entry['persistent_id'] or None,
             }
             
@@ -48,10 +48,9 @@ def preprocess_json_data(input_data_dir: str, save_data_dir: str):
     df_clean['category'].unique()
         
     # save
-    df.to_parquet(config)
+    df.to_parquet(os.path.join(save_data_dir, f""))
 
 
 if __name__ == '__main__':
     config = Config(Path("config/config_api_call.yml"))
-
-    preprocess_json_data(config.output_dir_raw)
+    preprocess_json_data(config.output_dir_raw, config.output_dir_processed)

@@ -1,0 +1,9 @@
+area_name: "London"
+coordinates:
+    # List of vertices in [longitude, latitude] (x, y) order for EPSG:4326
+    - [-0.51, 51.29]   # bottom-left corner
+    - [-0.51, 51.69]   # top-left corner
+    - [0.34, 51.69]    # top-right corner
+    - [0.34, 51.29]    # bottom-right corner
+    # Optionally, repeat the first point to close the loop explicitly:
+    # - [-0.51, 51.29]

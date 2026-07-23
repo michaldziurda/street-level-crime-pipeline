@@ -40,4 +40,4 @@ def setup_database(config_path:str):
     conn.close()
 
 if __name__ == "__main__":
-    main()
+    pass
