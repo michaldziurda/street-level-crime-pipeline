@@ -5,10 +5,13 @@ from psycopg2 import sql
 
 def check_if_table_exists(conn, table_name):
     cur = conn.cursor()
-    cur.execute(f"""SELECT EXISTS ( SELECT 1 
-                                    FROM information_schema.tables 
-                                    WHERE table_schema = 'db' 
-                                    AND table_name = '{table_name}' );""")
+    cur.execute(sql.SQL("""
+                        SELECT EXISTS ( SELECT 1 
+                        FROM information_schema.tables 
+                        WHERE table_schema = 'db' 
+                        AND table_name = '{table}' );""").format(
+                            table=sql.Identifier(table_name)
+                        ))
     res = cur.fetchone()
     cur.close()
     return res
