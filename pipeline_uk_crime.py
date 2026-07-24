@@ -1,13 +1,12 @@
-import psycopg2
 from pathlib import Path
 import os
 from dotenv import load_dotenv
 
 from utils.config import Config
-from utils.db_setup import setup_database
+from utils.db_setup import setup_database, connect_to_db
 from etl.extract.uk_crime_api_call import UKCrimeAPICall
 from etl.transform.uk_crime_preprocessing import preprocess_json_data
-from etl.load.uk_crime_load import ensure_table, load_crimes
+from etl.load.uk_crime_load import check_if_table_exists, load_crimes
 
 
 def main():
@@ -23,15 +22,10 @@ def main():
     preprocess_json_data(config.output_dir_raw, config.output_dir_processed)
 
     # DB interaction
-    conn = psycopg2.connect(
-        dbname = os.getenv("POSTGRES_DB"),
-        user = os.getenv("POSTGRES_USER"),
-        password = os.getenv("POSTGRES_PASSWORD"),
-        host = os.getenv("POSTGRES_HOST"),
-        port = os.getenv("POSTGRES_PORT"))
+    conn = connect_to_db()
 
     # Check for DB, create if needed
-    res = ensure_table(conn, 'crime_data')
+    res = check_if_table_exists(conn, 'crime_data')
     # Query returns a one-element tuple with True or False:
     if not all(res):
         setup_database(conn)
@@ -44,7 +38,8 @@ def main():
             print(f"Loading files to DB: {data_file}")
             full_path = Path(config.output_dir_processed, data_file)
 
-            load_crimes(conn, full_path, 'db.crime_data')
+            load_crimes(conn, full_path, 'crime_data')
+            break
 
 if __name__ == '__main__':
     main()

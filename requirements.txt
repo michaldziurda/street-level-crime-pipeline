@@ -1,0 +1,8 @@
+geopandas==1.1.4
+pandas==3.0.5
+psycopg2==2.9.12
+python-dotenv==1.2.2
+PyYAML==6.0.3
+Requests==2.34.2
+Shapely==2.1.2
+tqdm==4.69.0

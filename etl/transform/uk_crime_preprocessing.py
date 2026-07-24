@@ -32,19 +32,19 @@ def preprocess_json_data(input_data_dir: str, save_data_dir: str):
         # standarize
         for entry in raw_data:
             std_data = {
-            'id': entry.get('id', None),
-            'month': entry['month'] or None,
-            'category': entry['category'] or None,
-            'location_type': entry['location_type'] or None,
-            'location_subtype': entry['location_subtype'] or None,
-            'latitude': entry['location']['latitude'] or None,
-            'longitude': entry['location']['longitude'] or None,
-            'street_id': entry['location']['street']['id'] or None,
-            'street_name': entry['location']['street']['name'] or None,
-            'context': entry['context'] or None,
-            'outcome_status_category': entry.get('outcome_status', {}).get('category') if entry['outcome_status'] else None,
-            'outcome_status_date': entry.get('outcome_status', {}).get('date') if entry['outcome_status'] else None,
-            'persistent_id': entry['persistent_id'] or None,
+            'id': entry.get('id'),
+            'month': entry.get('month'),
+            'category': entry.get('category'),
+            'location_type': entry.get('location_type'),
+            'location_subtype': entry.get('location_subtype'),
+            'latitude': (entry.get('location') or {}).get('latitude'),
+            'longitude': (entry.get('location') or {}).get('longitude'),
+            'street_id': ((entry.get('location') or {}).get('street') or {}).get('id'),
+            'street_name': ((entry.get('location') or {}).get('street') or {}).get('name'),
+            'context': entry.get('context'),
+            'outcome_status_category': (entry.get('outcome_status') or {}).get('category'),
+            'outcome_status_date': (entry.get('outcome_status') or {}).get('date'),
+            'persistent_id': entry.get('persistent_id'),
             }
             
             full_data[identifier].append(std_data)

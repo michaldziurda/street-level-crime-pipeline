@@ -2,12 +2,9 @@ import requests
 import json
 import time
 from pathlib import Path
-import yaml
-import sys
 from shapely import Polygon
 from collections import deque
 import json
-import os
 import itertools
 
 from utils.config import Config

@@ -1,6 +1,5 @@
 import geopandas as gpd
-import numpy as np
-from shapely.geometry import Polygon, box
+from shapely.geometry import box
 import math
 
 def split_polygon_into_n(polygon, n=4, mode='grid'):

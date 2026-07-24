@@ -2,6 +2,18 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 
+def connect_to_db():
+    load_dotenv()
+    conn = psycopg2.connect(
+        dbname = os.getenv("POSTGRES_DB"),
+        user = os.getenv("POSTGRES_USER"),
+        password = os.getenv("POSTGRES_PASSWORD"),
+        host = os.getenv("POSTGRES_HOST"),
+        port = os.getenv("POSTGRES_PORT"),
+        options=f'-c search_path={os.getenv("POSTGRES_SCHEMA")}')
+    
+    return conn
+    
 def setup_database(conn):
     print("DB setup...")
     cur = conn.cursor()
@@ -36,15 +48,7 @@ def setup_database(conn):
     cur.close()
 
 if __name__ == "__main__":
-    load_dotenv()
-    conn = psycopg2.connect(
-        dbname = os.getenv("POSTGRES_DB"),
-        user = os.getenv("POSTGRES_USER"),
-        password = os.getenv("POSTGRES_PASSWORD"),
-        host = os.getenv("POSTGRES_HOST"),
-        port = os.getenv("POSTGRES_PORT"))
-    
-    
+    conn = connect_to_db()
     setup_database(conn)
     conn.close()
 
