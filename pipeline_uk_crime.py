@@ -38,7 +38,7 @@ def main():
             print(f"Loading files to DB: {data_file}")
             full_path = Path(config.output_dir_processed, data_file)
 
-            load_crimes(conn, full_path, 'crime_data')
+           # load_crimes(conn, full_path, 'crime_data')
 
 if __name__ == '__main__':
     main()
