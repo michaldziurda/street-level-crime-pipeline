@@ -19,7 +19,7 @@ Processing data from the following sources:
 
 | Variable name | Value |
 | --- | --- |
-| POSTGRES_NAME | name of the postgres dabase |
+| POSTGRES_DB| name of the postgres dabase |
 | POSTGRES_USER | username to log into the db |
 | POSTGRES_PASSWORD | password |
 | POSTGRES_HOST | localhost |
