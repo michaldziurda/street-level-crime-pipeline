@@ -12,3 +12,5 @@ set search_path to db;
 
 
 \pset columns 5;
+
+psql -U pipeline_user -d pipeline_db
