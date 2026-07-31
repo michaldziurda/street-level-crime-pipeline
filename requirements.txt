@@ -1,6 +1,6 @@
 geopandas==1.1.4
 pandas==3.0.5
-psycopg2==2.9.12
+psycopg2-binary
 python-dotenv==1.2.2
 PyYAML==6.0.3
 Requests==2.34.2

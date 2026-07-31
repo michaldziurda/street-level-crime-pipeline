@@ -14,11 +14,10 @@ def check_if_table_exists(conn, table_name):
     cur.close()
     return res
 
-
 def load_crimes(conn, parquet_path, table_name):
     df = pd.read_parquet(parquet_path)
     cols = ['id', 'persistent_id', 'month', 'category', 'location_type', 
-            'location_subtype', 'latitude', 'longitude', 'street_id', 'street_name', 
+            'location_subtype', 'latitude', 'longitude', 'region', 'street_id', 'street_name', 
             'context', 'outcome_status_category', 'outcome_status_date']
     rows = list(df[cols].itertuples(index=False, name=None))
 

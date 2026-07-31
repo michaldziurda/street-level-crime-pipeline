@@ -14,16 +14,17 @@ def connect_to_db():
     
     return conn
     
-def setup_database(conn):
+def setup_uk_database(conn):
+    load_dotenv()
     print("DB setup...")
     cur = conn.cursor()
     
     # Create schema
-    cur.execute("CREATE SCHEMA IF NOT EXISTS db;")
+    cur.execute(f"CREATE SCHEMA IF NOT EXISTS {os.getenv('POSTGRES_SCHEMA')};")
     
     # Create tables
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS db.crime_data (
+    cur.execute(f"""
+                CREATE TABLE IF NOT EXISTS {os.getenv("POSTGRES_SCHEMA")}.{os.getenv("UK_CRIMES_TABLE")} (
                 pk                          SERIAL PRIMARY KEY,
                 id                          INTEGER,
                 persistent_id               TEXT UNIQUE,
@@ -33,6 +34,7 @@ def setup_database(conn):
                 location_subtype            TEXT,
                 latitude                    NUMERIC(9,6),
                 longitude                   NUMERIC(9,6),
+                region                      TEXT,
                 street_id                   INTEGER,
                 street_name                 TEXT,
                 context                     TEXT,
@@ -49,6 +51,6 @@ def setup_database(conn):
 
 if __name__ == "__main__":
     conn = connect_to_db()
-    setup_database(conn)
+    setup_uk_database(conn)
     conn.close()
 

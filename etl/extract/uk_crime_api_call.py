@@ -9,6 +9,7 @@ import itertools
 
 from utils.config import Config
 from utils.split_poly import split_polygon_into_n
+from utils.funcion_timer import funcion_timer
 
 class UKCrimeAPICall:
     def __init__(self, config_path):
@@ -17,6 +18,13 @@ class UKCrimeAPICall:
         else:
             self.config = Config(config_path)
 
+        # Empty list means that all the deinfed spaces will be used
+        if self.config.areas is None:
+            self.config.areas = []
+            for f in Path(Path(self.config.config_file_path).parent, 'areas').iterdir():
+                if not f.name.startswith('_'):
+                    self.config.areas.append(f)
+            
     def post_request(self, session, data):
         for attempt in range(self.config.max_retries):
             try:
@@ -62,12 +70,15 @@ class UKCrimeAPICall:
         print("Max retries exceeded for a polygon; skipping.")
         return None
     
+    @funcion_timer
     def run(self):
         session = requests.Session()
         self.res = {}
 
         # Iterate over product of selected areas and months (defined in main api config) 
-        for area_config_file, month in itertools.product(self.config.areas, self.config.months): 
+        prd = itertools.product(self.config.areas, self.config.months)
+        for ix, (area_config_file, month) in enumerate(prd): 
+            print(f"Progress: {ix}/{len(self.config.areas) * len(self.config.months)}")
             area_config = Config(area_config_file)
             area_name = area_config.area_name
             area_coordinates = area_config.coordinates
@@ -109,9 +120,6 @@ class UKCrimeAPICall:
 
 
 if __name__ == "__main__":
-    api = UKCrimeAPICall(Path(
-        #"config/uk_crime_api/config_api_call.yml"
-        "config/uk_crime_api/_config_debug.yml"
-        ))
+    api = UKCrimeAPICall(Path("config/uk_crime_api/config_api_call.yml"))
     api.run()
 

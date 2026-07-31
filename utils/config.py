@@ -4,6 +4,7 @@ from pathlib import Path
 class Config:
     def __init__(self, config_file=None, data=None):
         self.config_dict = dict()
+        self.config_file_path = config_file
         
         if config_file is not None:
             self.from_yaml(config_file)

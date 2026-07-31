@@ -44,3 +44,4 @@ venv.bak/
 *.json
 *.csv
 *.parquet
+*.gz
