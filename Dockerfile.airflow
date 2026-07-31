@@ -1,6 +1,6 @@
 FROM apache/airflow:2.10.4
 
-WORK_DIR /opt/airflow
+WORKDIR /opt/airflow
 
 COPY --chown=airflow:0 requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

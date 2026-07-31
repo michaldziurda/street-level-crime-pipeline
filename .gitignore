@@ -45,3 +45,6 @@ venv.bak/
 *.csv
 *.parquet
 *.gz
+*.tsv
+
+*logs/

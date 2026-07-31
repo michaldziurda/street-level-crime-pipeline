@@ -3,7 +3,7 @@
 set -e
 
 psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-    -c "CREATE USER airflow WITH PASSWORD airflow;"
+    -c "CREATE USER airflow WITH PASSWORD 'airflow';"
 
 echo "Created user $POSTGRES_USER_AIRFLOW"
 
