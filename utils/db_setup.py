@@ -1,16 +1,17 @@
 import psycopg2
+from psycopg2 import sql
 import os
 from dotenv import load_dotenv
 
 def connect_to_db():
     load_dotenv()
     conn = psycopg2.connect(
-        dbname = os.getenv("POSTGRES_DB"),
-        user = os.getenv("POSTGRES_USER"),
-        password = os.getenv("POSTGRES_PASSWORD"),
-        host = os.getenv("POSTGRES_HOST"),
-        port = os.getenv("POSTGRES_PORT"),
-        options=f'-c search_path={os.getenv("POSTGRES_SCHEMA")}')
+        dbname = os.getenv("DB_NAME"),
+        user = os.getenv("DB_USER"),
+        password = os.getenv("DB_PASSWORD"),
+        host = os.getenv("DB_HOST"),
+        port = os.getenv("DB_PORT"),
+        options=f'-c search_path={os.getenv("DB_SCHEMA")}')
     
     return conn
     
@@ -20,11 +21,11 @@ def setup_uk_database(conn):
     cur = conn.cursor()
     
     # Create schema
-    cur.execute(f"CREATE SCHEMA IF NOT EXISTS {os.getenv('POSTGRES_SCHEMA')};")
+    cur.execute(f"""CREATE SCHEMA IF NOT EXISTS {sql.Identifier(os.getenv('DB_SCHEMA'))};""")
     
     # Create tables
     cur.execute(f"""
-                CREATE TABLE IF NOT EXISTS {os.getenv("POSTGRES_SCHEMA")}.{os.getenv("UK_CRIMES_TABLE")} (
+                CREATE TABLE IF NOT EXISTS {sql.Identifier(os.getenv("DB_SCHEMA"))}.{sql.Identifier(os.getenv("UK_CRIMES_TABLE"))} (
                 pk                          SERIAL PRIMARY KEY,
                 id                          INTEGER,
                 persistent_id               TEXT UNIQUE,

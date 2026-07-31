@@ -5,7 +5,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from utils.config import Config
-from utils.funcion_timer import funcion_timer
+from utils.function_timer import function_timer
 
 
 def clean_category(txt: str) -> str:
@@ -15,7 +15,7 @@ def clean_category(txt: str) -> str:
 def get_place_time_identifier(file_name):
     return "_".join(file_name.split("_")[1:3])
 
-@funcion_timer
+@function_timer
 def preprocess_json_data(input_data_dir: str, save_data_dir: str):
     # load
     full_data = dict()

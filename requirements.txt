@@ -6,3 +6,4 @@ PyYAML==6.0.3
 Requests==2.34.2
 Shapely==2.1.2
 tqdm==4.69.0
+pyarrow

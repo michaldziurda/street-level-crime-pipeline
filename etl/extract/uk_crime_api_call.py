@@ -4,12 +4,11 @@ import time
 from pathlib import Path
 from shapely import Polygon
 from collections import deque
-import json
 import itertools
 
 from utils.config import Config
 from utils.split_poly import split_polygon_into_n
-from utils.funcion_timer import funcion_timer
+from utils.function_timer import function_timer
 
 class UKCrimeAPICall:
     def __init__(self, config_path):
@@ -55,12 +54,12 @@ class UKCrimeAPICall:
                 retry_after = r.headers.get("Retry-After")
                 try:
                     wait = int(retry_after) if retry_after else None
-                    if wait != self.config.timeout:
-                        self.config.timeout = wait
+                    if wait != self.config.wait_on_429:
+                        self.config.wait_on_429 = wait
                 except ValueError:
                     wait = None
-                print(f"429 received. Sleeping for {wait:.1f}s (attempt {attempt})")
-                time.sleep(wait)
+                print(f"429 received. Sleeping for {self.config.wait_on_429:.1f}s (attempt {attempt})")
+                time.sleep(self.config.wait_on_429)
                 continue
             
             # other client error: return empty and log
@@ -70,7 +69,7 @@ class UKCrimeAPICall:
         print("Max retries exceeded for a polygon; skipping.")
         return None
     
-    @funcion_timer
+    @function_timer
     def run(self):
         session = requests.Session()
         self.res = {}

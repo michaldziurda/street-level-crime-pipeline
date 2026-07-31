@@ -1,6 +1,6 @@
 import time
 
-def funcion_timer(func):
+def function_timer(func):
     def wrapper(*args, **kwargs):
         start = time.perf_counter()
         result = func(*args, **kwargs)

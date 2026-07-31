@@ -19,7 +19,8 @@ initial_poly_split: 10
 max_retries: 5
 wait_on_success: 1
 wait_on_error: 5
-timeout: 30
+timeout: 40
+wait_on_429: 10
 
 
 # Output 
