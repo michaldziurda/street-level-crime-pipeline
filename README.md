@@ -12,24 +12,35 @@ Processing data from the following sources:
 
 1. Prerequsites:
 
-    Python >= 3.11 with libraries listed in requirements.txt
+    - Python >= 3.11 with libraries listed in requirements.txt
+    - Docker
 
 2. Environmental variables defined in .env file:
 
 | Variable name | Value |
 | --- | --- |
-| DB_NAME | name of the postgres dabase |
-| DB_USER | username to log into the db |
-| DB_PASSWORD | password |
-| DB_HOST | localhost |
-| DB_PORT  | 5432 or a different free one |
-| DB_SCHEMA | DB schema to interact with |
+| POSTGRES_NAME | name of the postgres dabase |
+| POSTGRES_USER | username to log into the db |
+| POSTGRES_PASSWORD | password |
+| POSTGRES_HOST | localhost |
+| POSTGRES_PORT  | 5432 or a different free one |
+| POSTGRES_SCHEMA | DB schema to interact with |
 | UK_CRIMES_TABLE | table name |
 
 3. How to start
 
+- Local:
+1. `cd path/to/repo`
+2. Set up a .venv:
+    - `python -m venv .venv`
+    - `.venv\Scripts\activate`
+    - `pip install -r requirements.txt`
+3. ` pip install -e .` - install the pipeline as a module for consistent imports
+4. `docker compose up -d` - start DB
+5. python pipeline_uk_crime.py
 
-Idk help me out here
+- Docker:
+1. `docker compose --profile apps up` - starts both pipeline and db
 
 
 ## Data sources
