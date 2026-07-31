@@ -38,8 +38,6 @@ limit 30
 
 
 -- Seasonal pattern in London
-SET lc_numeric = 'French_France.1252';
-
 select "month", count(*) as crime_count
 from uk_crime_stg_view
 group by "month"
