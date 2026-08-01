@@ -17,7 +17,7 @@ def connect_to_db():
     
 def setup_uk_database(conn):
     load_dotenv()
-    print("DB setup...")
+    print("UK DB setup...")
     cur = conn.cursor()
     
     # Create schema
@@ -54,7 +54,42 @@ def setup_uk_database(conn):
 
     conn.commit()
     print("Schema and tables created successfully.")
+    cur.close()
+
+def setup_eu_database(conn):
+    load_dotenv()
+    print("EU DB setup...")
+    cur = conn.cursor()
     
+    # Create schema
+    cur.execute(sql.SQL("""
+                        CREATE SCHEMA IF NOT EXISTS {schema};
+                        """).format(
+                            schema=sql.Identifier(os.getenv('POSTGRES_SCHEMA'))
+    ))
+    
+
+    # 'iccs', 'unit', 'geo', 'Year', 'crime_count'
+
+    # Create tables
+    cur.execute(sql.SQL("""
+                        CREATE TABLE IF NOT EXISTS {schema}.{table} (
+                        pk                          SERIAL PRIMARY KEY,
+                        id                          TEXT UNIQUE,
+                        iccs                        TEXT,
+                        unit                        TEXT,
+                        country                     TEXT,
+                        year                        INTEGER,
+                        crime_count                 NUMERIC(12,3),
+                        loaded_at                   TIMESTAMP DEFAULT NOW()
+                        );
+                        """).format(
+                            schema=sql.Identifier(os.getenv("POSTGRES_SCHEMA")),
+                            table=sql.Identifier(os.getenv("EU_CRIMES_TABLE"))
+    ))
+
+    conn.commit()
+    print("Schema and tables created successfully.")
     cur.close()
 
 if __name__ == "__main__":

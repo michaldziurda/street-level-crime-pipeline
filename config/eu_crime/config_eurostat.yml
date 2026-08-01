@@ -1,0 +1,5 @@
+
+iccs_code_table: "config/eu_crime/iccs_crime_codes.tsv"
+
+output_dir_raw: "data/raw/eurostat_files"
+output_dir_processed: "data/processed/eurostat"

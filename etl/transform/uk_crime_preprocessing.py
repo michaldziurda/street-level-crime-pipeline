@@ -16,10 +16,10 @@ def get_place_time_identifier(file_name):
     return "_".join(file_name.split("_")[1:3])
 
 @function_timer
-def preprocess_json_data(input_data_dir: str, save_data_dir: str):
+def preprocess_json_data(config: Config):
     # load
     full_data = dict()
-    full_file_list = os.listdir(input_data_dir)
+    full_file_list = os.listdir(config.output_dir_raw)
     keys = list(set([get_place_time_identifier(f) for f in full_file_list]))
     
     for key in keys:
@@ -27,7 +27,7 @@ def preprocess_json_data(input_data_dir: str, save_data_dir: str):
 
     for f_name in tqdm(full_file_list):
         identifier = get_place_time_identifier(f_name)
-        file_path = os.path.join(input_data_dir, f_name)
+        file_path = os.path.join(config.output_dir_raw, f_name)
         with open(file_path, 'r') as f:
             raw_data = json.load(f)
 
@@ -59,8 +59,8 @@ def preprocess_json_data(input_data_dir: str, save_data_dir: str):
             df_clean = df.drop_duplicates(subset='id', keep='first')
             #df_clean = df_clean.set_index('id', drop=True)
             df_clean['category'] = df_clean['category'].apply(clean_category)
-            df_clean.to_parquet(os.path.join(save_data_dir, f"{key}.parquet"))
+            df_clean.to_parquet(os.path.join(config.output_dir_processed, f"{key}.parquet"))
 
 if __name__ == '__main__':
     config = Config(Path("config/uk_crime_api/config_api_call.yml"))
-    preprocess_json_data(config.output_dir_raw, config.output_dir_processed)
+    preprocess_json_data(config)

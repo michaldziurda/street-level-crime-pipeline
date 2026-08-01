@@ -17,9 +17,7 @@ def check_if_table_exists(conn, table_name):
 
 def load_crimes(conn, parquet_path, table_name):
     df = pd.read_parquet(parquet_path)
-    cols = ['id', 'persistent_id', 'month', 'category', 'location_type', 
-            'location_subtype', 'latitude', 'longitude', 'region', 'street_id', 'street_name', 
-            'context', 'outcome_status_category', 'outcome_status_date']
+    cols = ['id', 'iccs', 'unit', 'country', 'year', 'crime_count']
     rows = list(df[cols].itertuples(index=False, name=None))
 
     stmt = sql.SQL("""
@@ -28,9 +26,10 @@ def load_crimes(conn, parquet_path, table_name):
                 ON CONFLICT ({conflict_col}) DO NOTHING""").format(
                     table=sql.Identifier(table_name),
                     columns=sql.SQL(', ').join(map(sql.Identifier, cols)),
-                    conflict_col=sql.Identifier('persistent_id'))
+                    conflict_col=sql.Identifier('id'))
     
     cur = conn.cursor()
     execute_values(cur, stmt, rows)
     conn.commit()
     cur.close()
+
