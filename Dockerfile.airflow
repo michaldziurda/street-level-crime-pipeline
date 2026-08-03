@@ -6,4 +6,4 @@ COPY --chown=airflow:0 requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY  --chown=airflow:0 . .
-RUN pip install -e .
+RUN pip install -e . 
