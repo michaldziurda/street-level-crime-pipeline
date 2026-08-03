@@ -11,3 +11,13 @@ psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
     -c "CREATE DATABASE airflow OWNER airflow;"
 
 echo "DB $POSTGRES_DB_AIRFLOW exists"
+
+psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+    -c "CREATE USER metabase WITH PASSWORD 'metabase';"
+
+echo "Created user metabase"
+
+psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+    -c "CREATE DATABASE metabase OWNER metabase;"
+
+echo "DB metabaseexists"
