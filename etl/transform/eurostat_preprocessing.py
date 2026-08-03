@@ -28,7 +28,6 @@ def preprocess_eurostat_data(config: Config):
             
             # Initial file contains consecutive years as seaparate column. Reshaping df to have years as a single column
             df = pd.melt(df, id_vars=['iccs', 'unit', 'geo'], value_vars=df.filter(regex="[0-9]{4}").columns, var_name='year', value_name='crime_count')
-            df['year'] = df['year'].astype(int)
             df['crime_count'] = pd.to_numeric(df['crime_count'], errors='coerce')
 
             # Assign an id for unique tracking
@@ -39,6 +38,8 @@ def preprocess_eurostat_data(config: Config):
 
             # Decoding iccs codes 
             df['iccs'] = df['iccs'].apply(lambda x: iccs_lookup_dict[x.replace('ICCS', '')])
+
+            df['year'] = df['year'].astype(int)
 
             # Rename geo for easier understanding
             df.rename({'geo': 'country'}, axis=1, inplace=True)
