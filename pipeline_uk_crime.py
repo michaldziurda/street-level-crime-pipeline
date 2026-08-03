@@ -26,7 +26,7 @@ def main():
     api.run()
 
     # Clean and structurize data
-    preprocess_json_data(config.output_dir_raw, config.output_dir_processed)
+    preprocess_json_data(config)
 
     # DB interaction
     conn = connect_to_db()

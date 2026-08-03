@@ -1,9 +1,9 @@
 from airflow.decorators import dag, task
+from airflow.models.param import Param
 from datetime import datetime
 from pathlib import Path
 import time
 import os
-
 
 from utils.config import Config
 from utils.db_setup import setup_uk_database, connect_to_db
@@ -19,9 +19,16 @@ DEFAULT_CONFIG = r"config/uk_crime_api/config_api_call.yml"
     start_date=datetime(2025,1,1),
     schedule=None,
     catchup=False,
-    tags=['uk', 'crime', 'pipeline', 'api']
+    tags=['uk', 'crime', 'pipeline', 'api'],
+    params={
+        'config_path': Param(
+            default=DEFAULT_CONFIG,
+            type='string',
+            description='Path to the YAML config file'
+        )
+    }
 )
-def uk_crimne_pipeline():
+def uk_crime_pipeline():
     @task
     def ensure_table():
         conn = connect_to_db()
@@ -35,25 +42,24 @@ def uk_crimne_pipeline():
     
     @task
     def extract(**kwargs):
-        config_path = kwargs['dag_run'].conf.get('config_path', DEFAULT_CONFIG)
+        config_path = kwargs['params']['config_path']
         config = Config(config_path)
 
         ensure_paths(config.output_dir_raw)
         ensure_paths(config.output_dir_processed)
 
-        config = Config('config/uk_crime_api/config_api_call.yml')
         api = UKCrimeAPICall(config)
         api.run()
 
     @task
     def transform(**kwargs):
-        config_path = kwargs['dag_run'].conf.get('config_path', DEFAULT_CONFIG)
+        config_path = kwargs['params']['config_path']
         config = Config(config_path)
-        preprocess_json_data(config.output_dir_raw, config.output_dir_processed)
+        preprocess_json_data(config)
 
     @task
     def load(**kwargs):
-        config_path = kwargs['dag_run'].conf.get('config_path', DEFAULT_CONFIG)
+        config_path = kwargs['params']['config_path']
         config = Config(config_path)
         
         conn = connect_to_db()
@@ -64,11 +70,10 @@ def uk_crimne_pipeline():
                 full_path = Path(config.output_dir_processed, data_file)
                 load_crimes(conn, full_path, os.getenv("UK_CRIMES_TABLE"))
         
-            end = time.perf_counter()
-            print(f"Loading dat to the dababase took {end - start:.6f} seconds")
+        end = time.perf_counter()
+        print(f"Loading dat to the dababase took {end - start:.6f} seconds")
         conn.close()
 
     ensure_table() >> extract() >> transform() >> load()
 
-    
-uk_crimne_pipeline()
+uk_crime_pipeline()

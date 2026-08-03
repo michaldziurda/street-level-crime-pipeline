@@ -22,6 +22,7 @@ x-airflow-common:
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
+    - ./config:/opt/airflow/config
   depends_on:
     db:
       condition: service_healthy
